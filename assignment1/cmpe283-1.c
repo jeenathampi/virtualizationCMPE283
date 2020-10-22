@@ -13,6 +13,7 @@
  */
 #define IA32_VMX_PINBASED_CTLS 0x481
 #define IA32_VMX_PROCBASED_CTLS 0x482
+#define IA32_VMX_PROCBASED_CTLS2 0x48B
 
 /*
  * struct caapability_info
@@ -62,6 +63,36 @@ struct capability_info procbased[21] =
 		{30, "PAUSE exiting"},
 		{31, "Activate secondary controls"}};
 
+struct capability_info sec_procbased[27] =
+	{
+		{0, "Virtualize APIC accesses"},
+		{1, "Enable EPT"},
+		{2, "Descriptor-table exiting"},
+		{3, "Enable RDTSCP"},
+		{4, "Virtualize x2APIC mode"},
+		{5, "Enable VPID"},
+		{6, "WBINVD exiting"},
+		{7, "Unrestricted guest"},
+		{8, "APIC-register virtualization"},
+		{9, "Virtual-interrupt delivery"},
+		{10, "PAUSE-loop exiting"},
+		{11, "RDRAND exiting"},
+		{12, "Enable INVPCID"},
+		{13, "Enable VM functions"},
+		{14, "VMCS shadowing"},
+		{15, "Enable ENCLS exiting"},
+		{16, "RDSEED exiting"},
+		{17, "Enable PML"},
+		{18, "EPT-violation #VE"},
+		{19, "Conceal VMX from PT"},
+		{20, "Enable XSAVES/XRSTORS"},
+		{22, "Mode-based execute control for EPT"},
+		{23, "Sub-page write permissions for EPT"},
+		{24, "Intel PT uses guest physical addresses"},
+		{25, "Use TSC scaling"},
+		{26, "Enable user wait and pause"},
+		{28, "Enable ENCLV exiting"}};
+
 /*
  * report_capability
  *
@@ -108,10 +139,16 @@ void detect_vmx_features(void)
 	pr_info("Pinbased Controls MSR: 0x%llx\n",
 			(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(pinbased, 5, lo, hi);
+	printk(KERN_INFO "------------------------------------------\n");
 	rdmsr(IA32_VMX_PROCBASED_CTLS, lo, hi);
 	pr_info("Procbased Controls MSR: 0x%llx\n",
 			(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 21, lo, hi);
+	printk(KERN_INFO "------------------------------------------\n");
+	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
+	pr_info("Secondary Procbased Controls MSR: 0x%llx\n",
+			(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(sec_procbased, 26, lo, hi);
 }
 
 /*

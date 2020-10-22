@@ -1,2 +1,2 @@
-/home/user/Documents/assignment1/cmpe283-1.o
+/home/user/Documents/virtualizationCMPE283/assignment1/cmpe283-1.o
 
