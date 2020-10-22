@@ -14,6 +14,8 @@
 #define IA32_VMX_PINBASED_CTLS 0x481
 #define IA32_VMX_PROCBASED_CTLS 0x482
 #define IA32_VMX_PROCBASED_CTLS2 0x48B
+#define IA32_VMX_EXIT_CTLS 0x483
+#define IA32_VMX_ENTRY_CTLS 0x484
 
 /*
  * struct caapability_info
@@ -93,6 +95,38 @@ struct capability_info sec_procbased[27] =
 		{26, "Enable user wait and pause"},
 		{28, "Enable ENCLV exiting"}};
 
+struct capability_info exitbased[14] =
+	{
+		{2, "Save debug controls"},
+		{9, "Host address-space size"},
+		{12, "Load IA32_PERF_GLOBAL_CTRL"},
+		{15, "Acknowledge interrupt on exit"},
+		{18, "Save IA32_PAT"},
+		{19, "Load IA32_PAT"},
+		{20, "Save IA32_EFER"},
+		{21, "Load IA32_EFER"},
+		{22, "ave VMXpreemption timer value"},
+		{23, "Clear IA32_BNDCFGS"},
+		{24, "Conceal VMX from PT"},
+		{25, "Clear IA32_RTIT_CTL"},
+		{28, "Load CET state"},
+		{29, "Load PKRS"}};
+
+struct capability_info entrybased[12] =
+	{
+		{2, "Load debug controls"},
+		{9, "IA-32e mode guest"},
+		{10, "Entry to SMM"},
+		{11, "Deactivate dualmonitor treatment"},
+		{13, "Load IA32_PERF_GLOBAL_CTRL"},
+		{14, "Load IA32_PAT"},
+		{15, "Load IA32_EFER"},
+		{16, "Load IA32_BNDCFGS"},
+		{17, "Conceal VMX from PT"},
+		{18, "Load IA32_RTIT_CTL"},
+		{20, "Load CET state"},
+		{22, "Load PKRS"}};
+
 /*
  * report_capability
  *
@@ -149,6 +183,16 @@ void detect_vmx_features(void)
 	pr_info("Secondary Procbased Controls MSR: 0x%llx\n",
 			(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(sec_procbased, 26, lo, hi);
+	printk(KERN_INFO "------------------------------------------\n");
+	rdmsr(IA32_VMX_EXIT_CTLS, lo, hi);
+	pr_info("Exit Controls MSR: 0x%llx\n",
+			(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(exitbased, 14, lo, hi);
+	printk(KERN_INFO "------------------------------------------\n");
+	rdmsr(IA32_VMX_ENTRY_CTLS, lo, hi);
+	pr_info("Entry Controls MSR: 0x%llx\n",
+			(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(entrybased, 12, lo, hi);
 }
 
 /*
